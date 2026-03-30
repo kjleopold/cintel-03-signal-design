@@ -184,6 +184,11 @@ def main() -> None:
     # - a renamed version of an existing column.
     throughput_signal_recipe: pl.Expr = pl.col("requests").alias("throughput")
 
+    performance_score: pl.Expr = (
+        (1 - (pl.col("errors") / pl.col("requests"))) * 100
+        - ((pl.col("total_latency_ms") / pl.col("requests")) / 10)
+    ).alias("performance_score")
+
     # ----------------------------------------------------
     # STEP 2.7: APPLY THE SIGNAL RECIPES TO THE DATAFRAME
     # ----------------------------------------------------
@@ -194,6 +199,7 @@ def main() -> None:
             error_rate_signal_recipe,
             avg_latency_signal_recipe,
             throughput_signal_recipe,
+            performance_score,  # add this line
         ]
     )
 
@@ -213,6 +219,7 @@ def main() -> None:
             "error_rate",
             "avg_latency_ms",
             "throughput",
+            "performance_score",
         ]
     )
 
